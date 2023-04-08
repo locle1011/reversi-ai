@@ -117,7 +117,7 @@ class MCTSAgent(Agent):
     def find_best_move(self, simulation_number=100):
         for _ in range(simulation_number):
             child, player_icon = self.do_tree_policy()
-            reward = child.simulate(player_icon)
+            reward = child.simulate(player_icon) * self.playerIcon
             child.backpropagate(reward)
         return self.root.get_best_move()
 
