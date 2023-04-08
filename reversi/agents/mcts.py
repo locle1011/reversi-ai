@@ -87,7 +87,7 @@ class MCTSNode:
 
 
 class MCTSAgent(Agent):
-    def __init__(self, game_state: GameState, player_icon, valuer: Valuer):
+    def __init__(self, game_state: GameState, player_icon, valuer: Valuer, simulation_time=100):
         super().__init__(game_state, player_icon)
         self.root = None
         if game_state:
@@ -96,6 +96,7 @@ class MCTSAgent(Agent):
         if player_icon:
             self.playerIcon = player_icon
         self.valuer = valuer
+        self.simulationTime = simulation_time
 
     def __call__(self, game_state: GameState, player_icon):
         self.root = MCTSNode(game_state, self.valuer)
@@ -114,14 +115,14 @@ class MCTSAgent(Agent):
 
         return current_node, player_icon
 
-    def find_best_move(self, simulation_number=100):
-        for _ in range(simulation_number):
+    def find_best_move(self):
+        for _ in range(self.simulationTime):
             child, player_icon = self.do_tree_policy()
             reward = child.simulate(player_icon) * self.playerIcon
             child.backpropagate(reward)
         return self.root.get_best_move()
 
     def move(self):
-        move = self.find_best_move(100)
+        move = self.find_best_move()
         self.root.gameState.to_next_state(move, self.playerIcon)
         self.root.clean()
